@@ -32,6 +32,8 @@ MuseScore {
     property string _S   : "&lt;"  // button slide char <
     property string _L   : "°"      // 16 hole chromatic lowest register char
 
+    property string _RED  : "#ff0000"
+
     property bool _DEBUG : false
     // ------ OPTIONS -------
 
@@ -373,6 +375,7 @@ MuseScore {
             var tab = tuning[notes[i].pitch - harpkey]
             if (typeof tab === "undefined") {
                 text.text = "X"
+                text.color = _RED
 
             } else {
                 if (notes[i].tieBack != null) { // No tab if the note is tied
