@@ -26,8 +26,13 @@ MuseScore {
     pluginType : "dialog"
 
     // ------ OPTIONS -------
-    property string sep : "\n" // change to "," if you want tabs horizontally
-    property string bendChar : "'" // change to "b" if you want bend to be noted with b
+    property string sep : "\n"      // change to "," or " " if you want tabs horizontally
+    property string _B   : "'"      // change to "b" if you want bend to be noted with b
+    property string _O   : "o"      // overbend char
+    property string _S   : "&lt;"  // button slide char <
+    property string _L   : "°"      // 16 hole chromatic lowest register char
+
+    property bool _DEBUG : false
     // ------ OPTIONS -------
 
     id : window
@@ -97,19 +102,19 @@ MuseScore {
                 model : ListModel {
                     id : harp
                     property var tuning
-                    ListElement { tuning: 1;  text: "Blues Harp (Richter)"}
-                    ListElement { tuning: 2;  text: "Standard Chromatic"}
-                    ListElement { tuning: 3;  text: "16 Hole Standard Chromatic"}
-                    ListElement { tuning: 4;  text: "Melody Maker"}
-                    ListElement { tuning: 5;  text: "Country"}
-                    ListElement { tuning: 6;  text: "Richter valved"}
-                    ListElement { tuning: 7;  text: "Natural Minor"}
-                    ListElement { tuning: 8;  text: "Circular (Seydel), valved"}
-                    ListElement { tuning: 9;  text: "Circular (Inversed for blow 1), valved "}
-                    ListElement { tuning: 10; text: "Paddy Richter (Brendan Power), valved"}
-                    ListElement { tuning: 11; text: "Power Bender (Brendan Power), valved"}
-                    ListElement { tuning: 12; text: "Power Draw (Brendan Power), valved"}
-                    ListElement { tuning: 13; text: "TrueChromatic Diatonic, valved"}
+                    ListElement { tuning: 1;  text: "Blues Harp (Richter)" }
+                    ListElement { tuning: 2;  text: "Standard Chromatic" }
+                    ListElement { tuning: 3;  text: "16 Hole Standard Chromatic" }
+                    ListElement { tuning: 4;  text: "Melody Maker" }
+                    ListElement { tuning: 5;  text: "Country" }
+                    ListElement { tuning: 6;  text: "Richter valved" }
+                    ListElement { tuning: 7;  text: "Natural Minor" }
+                    ListElement { tuning: 8;  text: "Circular (Seydel), valved" }
+                    ListElement { tuning: 9;  text: "Circular (Inversed for blow 1), valved " }
+                    ListElement { tuning: 10; text: "Paddy Richter (Brendan Power), valved" }
+                    ListElement { tuning: 11; text: "Power Bender (Brendan Power), valved" }
+                    ListElement { tuning: 12; text: "Power Draw (Brendan Power), valved" }
+                    ListElement { tuning: 13; text: "TrueChromatic Diatonic, valved" }
                 }
 
                 width : 100
@@ -220,111 +225,111 @@ MuseScore {
     function tabNotes(notes, text) {
         //Standard Richter tuning with overbends
         var richter = [
-            "+1", "-1b", "-1", "+1o", "+2", "-2bb", "-2b", "-2", "-3bbb", "-3bb", "-3b",   "-3",
-            "+4", "-4b", "-4", "+4o", "+5", "-5",   "+5o", "+6", "-6b",   "-6",   "+6o",   "-7",
-            "+7", "-7o", "-8", "+8b", "+8", "-9",   "+9b", "+9", "-9o",   "-10",  "+10bb", "+10b", "+10", "-10o"
+            "+1", "-1%1".arg(_B), "-1", "+1%1".arg(_O), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "-3%1%2%3".arg(_B).arg(_B).arg(_B), "-3%1%2".arg(_B).arg(_B), "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "+4%1".arg(_O), "+5", "-5", "+5%1".arg(_O), "+6", "-6%1".arg(_B), "-6", "+6%1".arg(_O), "-7",
+            "+7", "-7%1".arg(_O), "-8", "+8%1".arg(_B), "+8", "-9", "+9%1".arg(_B), "+9", "-9%1".arg(_O), "-10", "+10%1%2".arg(_B).arg(_B), "+10%1".arg(_B), "+10", "-10%1".arg(_O)
         ];
 
 
         var richterValved = [
-            "+1", "-1b", "-1", "+2b", "+2", "-2bb", "-2b", "-2", "-3bbb", "-3bb", "-3b",  "-3",
-            "+4", "-4b", "-4", "+5b", "+5", "-5",  "+6b",  "+6", "-6b",   "-6",   "-7b",  "-7",
-            "+7", "-8b", "-8", "+8b", "+8", "-9",  "+9b",  "+9", "-10b",  "-10",  "+10bb", "+10b", "+10"
+            "+1", "-1%1".arg(_B), "-1", "+2%1".arg(_B), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "-3%1%2%3".arg(_B).arg(_B).arg(_B), "-3%1%2".arg(_B).arg(_B), "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "+5%1".arg(_B), "+5", "-5", "+6%1".arg(_B), "+6", "-6%1".arg(_B), "-6", "-7%1".arg(_B), "-7",
+            "+7", "-8%1".arg(_B), "-8", "+8%1".arg(_B), "+8", "-9", "+9%1".arg(_B), "+9", "-10%1".arg(_B), "-10", "+10%1%2".arg(_B).arg(_B), "+10%1".arg(_B), "+10"
         ];
-        richterValved[-2] = "+1bb"; richterValved[-1] = "+1b"; //Two notes below the key at blow 1
+        richterValved[-2] = "+1%1%2".arg(_B).arg(_B); richterValved[-1] = "+1%1".arg(_B); //Two notes below the key at blow 1
 
 
-        // Brendan Power's tuning, half valved
+        // _Brendan Power's tuning, half valved
         var paddyRichter = [
-            "+1", "-1b", "-1", "+2b", "+2", "-2bb", "-2b", "-2", "+3b",  "+3",  "-3b",  "-3",
-            "+4", "-4b", "-4", "+5b", "+5", "-5",   "+6b", "+6", "-6b",  "-6",  "-7b",  "-7",
-            "+7", "-8b", "-8", "+8b", "+8", "-9",   "+9b", "+9", "-10b", "-10", "+10bb", "+10b", "+10"
+            "+1", "-1%1".arg(_B), "-1", "+2%1".arg(_B), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "+3%1".arg(_B), "+3", "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "+5%1".arg(_B), "+5", "-5", "+6%1".arg(_B), "+6", "-6%1".arg(_B), "-6", "-7%1".arg(_B), "-7",
+            "+7", "-8%1".arg(_B), "-8", "+8%1".arg(_B), "+8", "-9", "+9%1".arg(_B), "+9", "-10%1".arg(_B), "-10", "+10%1%2".arg(_B).arg(_B), "+10%1".arg(_B), "+10"
         ];
-        paddyRichter[-2] = "+1bb"; paddyRichter[-1] = "+1b"; //Two notes below the key at blow 1
+        paddyRichter[-2] = "+1%1%2".arg(_B).arg(_B); paddyRichter[-1] = "+1%1".arg(_B); //Two notes below the key at blow 1
 
 
         var country = [
-            "+1", "-1b", "-1", "+1o", "+2", "-2bb", "-2b", "-2", "-3bbb", "-3bb", "-3b",  "-3",
-            "+4", "-4b", "-4", "+4o", "+5", "-5b",  "-5",  "+6", "-6b",   "-6",   "+6o",  "-7",
-            "+7", "-7o", "-8", "+8b", "+8", "-9",   "+9b", "+9", "-9o",   "-10",  "+10bb", "+10b", "+10", "-10o"
+            "+1", "-1%1".arg(_B), "-1", "+1%1".arg(_O), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "-3%1%2%3".arg(_B).arg(_B).arg(_B), "-3%1%2".arg(_B).arg(_B), "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "+4%1".arg(_O), "+5", "-5%1".arg(_B), "-5", "+6", "-6%1".arg(_B), "-6", "+6%1".arg(_O), "-7",
+            "+7", "-7%1".arg(_O), "-8", "+8%1".arg(_B), "+8", "-9", "+9%1".arg(_B), "+9", "-9%1".arg(_O), "-10", "+10%1%2".arg(_B).arg(_B), "+10%1".arg(_B), "+10", "-10%1".arg(_O)
         ];
 
 
         var standardChromatic = [
-            "+1", '+1s', "-1", "-1s", "+2",  "-2",  "-2s",  "+3",  "+3s",  "-3",  "-3s",  "-4",
-            "+4", "+4s", "-5", "-5s", "+6",  "-6",  "-6s",  "+7",  "+7s",  "-7",  "-7s",  "-8",
-            "+8", "+8s", "-9", "-9s", "+10", "-10", "-10s", "+11", "+11s", "-11", "-11s", "-12", "+12", "+12s", "-12s"
+            "+1", "+1%1".arg(_S), "-1", "-1%1".arg(_S), "+2", "-2", "-2%1".arg(_S), "+3", "+3%1".arg(_S), "-3", "-3%1".arg(_S), "-4",
+            "+4", "+4%1".arg(_S), "-5", "-5%1".arg(_S), "+6", "-6", "-6%1".arg(_S), "+7", "+7%1".arg(_S), "-7", "-7%1".arg(_S), "-8",
+            "+8", "+8%1".arg(_S), "-9", "-9%1".arg(_S), "+10", "-10", "-10%1".arg(_S), "+11", "+11%1".arg(_S), "-11", "-11%1".arg(_S), "-12", "+12", "+12%1".arg(_S), "-12%1".arg(_S)
         ];
 
 
         var standard16Chromatic = [
-            "+1°", '+1°s', "-1°", "-1°s", "+2°", "-2°", "-2°s", "+3°", "+3°s", "-3°", "-3°s", "-4°",
-            "+1",  '+1s',  "-1",  "-1s",  "+2",  "-2",  "-2s",  "+3",  "+3s",  "-3",  "-3s",  "-4",
-            "+4",  "+4s",  "-5",  "-5s",  "+6",  "-6",  "-6s",  "+7",  "+7s",  "-7",  "-7s",  "-8",
-            "+8",  "+8s",  "-9",  "-9s",  "+10", "-10", "-10s", "+11", "+11s", "-11", "-11s", "-12", "+12", "+12s", "-12s"
+            "+1%1".arg(_L), "+1%1%2".arg(_L).arg(_S), "-1%1".arg(_L), "-1%1%2".arg(_L).arg(_S), "+2%1".arg(_L), "-2%1".arg(_L), "-2%1%2".arg(_L).arg(_S), "+3%1".arg(_L), "+3%1%2".arg(_L).arg(_S), "-3%1".arg(_L), "-3%1%2".arg(_L).arg(_S), "-4%1".arg(_L),
+            "+1", "+1%1".arg(_S), "-1", "-1%1".arg(_S), "+2", "-2", "-2%1".arg(_S), "+3", "+3%1".arg(_S), "-3", "-3%1".arg(_S), "-4",
+            "+4", "+4%1".arg(_S), "-5", "-5%1".arg(_S), "+6", "-6", "-6%1".arg(_S), "+7", "+7%1".arg(_S), "-7", "-7%1".arg(_S), "-8",
+            "+8", "+8%1".arg(_S), "-9", "-9%1".arg(_S), "+10", "-10", "-10%1".arg(_S), "+11", "+11%1".arg(_S), "-11", "-11%1".arg(_S), "-12", "+12", "+12%1".arg(_S), "-12%1".arg(_S)
         ];
 
 
         // Circular/Spiral tuned diatonic
         // Key per Seydel "G"on blow 1, C major at draw 2, A minor at draw 1
         var zirkValved = [
-            "+1", "-1b", "-1", "+2b", "+2", "-2", "+3b", "+3",  "-3b",  "-3", "+4", "-4b",
-            "-4", "+5b", "+5", "-5b", "-5", "+6", "-6b", "-6",  "+7b",  "+7", "-7", "+8b",
-            "+8", "-8b", "-8", "+9b", "+9", "-9", "10b", "+10", "-10b", "-10"
+            "+1", "-1%1".arg(_B), "-1", "+2%1".arg(_B), "+2", "-2", "+3%1".arg(_B), "+3", "-3%1".arg(_B), "-3", "+4", "-4%1".arg(_B),
+            "-4", "+5%1".arg(_B), "+5", "-5%1".arg(_B), "-5", "+6", "-6%1".arg(_B), "-6", "+7%1".arg(_B), "+7", "-7", "+8%1".arg(_B),
+            "+8", "-8%1".arg(_B), "-8", "+9%1".arg(_B), "+9", "-9", "10%1".arg(_B), "+10", "-10%1".arg(_B), "-10"
         ];
 
 
         //True Chromatic diatonic, valves
         //Another side of the spiral logic is expanded in the “True Chromatic” tuning, designed by Eugene Ivanov.
         //All chords can be arranged in a continuous, looped progression on major and minor triads:
-        //C Eb G Bb D F A C E G B D Gb A Db E Ab B Eb Gb Bb Db F Ab C (and looped on C minor after that).
+        //C Eb G _Bb D F A C E G _B D Gb A Db E Ab _B Eb Gb _Bb Db F Ab C (and looped on C minor after that).
         var trueChrom = [
-            "+1", "-1b", "-1", "+2", "-2b", "-2", "+3b", "+3",  "-3b",  "-3", "+4",  "-4b",
-            "-4", "+5b", "+5", "-5b", "-5", "+6", "-6b", "-6",  "+7b",  "+7", "-7b", "-7",
-            "+8", "-8b", "-8", "+9b", "+9", "-9b", "-9", "+10", "-10b", "-10"
+            "+1", "-1%1".arg(_B), "-1", "+2", "-2%1".arg(_B), "-2", "+3%1".arg(_B), "+3", "-3%1".arg(_B), "-3", "+4", "-4%1".arg(_B),
+            "-4", "+5%1".arg(_B), "+5", "-5%1".arg(_B), "-5", "+6", "-6%1".arg(_B), "-6", "+7%1".arg(_B), "+7", "-7%1".arg(_B), "-7",
+            "+8", "-8%1".arg(_B), "-8", "+9%1".arg(_B), "+9", "-9%1".arg(_B), "-9", "+10", "-10%1".arg(_B), "-10"
         ];
 
 
-        //Labeled by blow 1 like Hohner. Seydel and Lee Okar labels by draw 2
+        //Labeled by blow 1 like Hohner. Seydel and Lee _Okar labels by draw 2
         var naturalMinor = [
-            "+1", "-1b", "-1", "+2", "-2bbb", "-2bb", "-2b", "-2", "-3bb", "-3b", "-3",    "+3o",
-            "+4", "-4b", "-4", "+5", "-5b",   "-5",   "+5o", "+6", "-6b",  "-6",  "-7",    "+7b",
-            "+7", "-7o", "-8", "+8", "-8o",   "-9",   "+9b", "+9", "-9o",  "-10", "+10bb", "+10b", "+10", "-10o"
+            "+1", "-1%1".arg(_B), "-1", "+2", "-2%1%2%3".arg(_B).arg(_B).arg(_B), "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "-3%1%2".arg(_B).arg(_B), "-3%1".arg(_B), "-3",          "+3%1".arg(_O),
+            "+4", "-4%1".arg(_B), "-4", "+5", "-5%1".arg(_B), "-5", "+5%1".arg(_O), "+6", "-6%1".arg(_B), "-6", "-7",          "+7%1".arg(_B),
+            "+7", "-7%1".arg(_O), "-8", "+8", "-8%1".arg(_O), "-9", "+9%1".arg(_B), "+9", "-9%1".arg(_O), "-10", "+10%1%2".arg(_B).arg(_B), "+10%1".arg(_B), "+10", "-10%1".arg(_O)
          ];
 
 
         var melodyMaker = [ , , , , , // label by draw 2
-            "+1", "-1b", "-1", "+1o", "+2", "-2bb", "-2b", "-2", "+2o", "+3",  "-3b",   "-3",
-            "+4", "-4b", "-4", "+4o", "+5", "-5b",  "-5",  "+6", "-6b", "-6",  "+6o",   "-7",
-            "+7", "-7o", "-8", "+8b", "+8", "-8o",  "-9",  "+9", "-9o", "-10", "+10bb", "+10b", "+10", "-10o"
+            "+1", "-1%1".arg(_B), "-1", "+1%1".arg(_O), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "+2%1".arg(_O), "+3", "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "+4%1".arg(_O), "+5", "-5%1".arg(_B), "-5", "+6", "-6%1".arg(_B), "-6", "+6%1".arg(_O), "-7",
+            "+7", "-7%1".arg(_O), "-8", "+8%1".arg(_B), "+8", "-8%1".arg(_O), "-9", "+9", "-9%1".arg(_O), "-10", "+10%1%2".arg(_B).arg(_B), "+10%1".arg(_B), "+10", "-10%1".arg(_O)
          ];
 
 
         // Circular/Spiral tuned diatonic
-        // Inversed for Blow 1. Key of C major scale starts at blow 1
+        // Inversed for _Blow 1. Key of C major scale starts at blow 1
         var spiral_b1 = [
-            "+1", "-1b", "-1", "+2b", "+2", "-2", "+3b",  "+3",  "-3b",  "-3",  "+4b", "+4",
-            "-4", "+5b", "+5", "-5b", "-5", "+6", "-6b",  "-6",  "+7b",  "+7b", "-7",  "-7",
-            "+8", "-8b", "-8", "+9b", "+9", "-9", "+10b", "+10", "-10b", "-10"
+            "+1", "-1%1".arg(_B), "-1", "+2%1".arg(_B), "+2", "-2", "+3%1".arg(_B), "+3", "-3%1".arg(_B), "-3", "+4%1".arg(_B), "+4",
+            "-4", "+5%1".arg(_B), "+5", "-5%1".arg(_B), "-5", "+6", "-6%1".arg(_B), "-6", "+7%1".arg(_B), "+7%1".arg(_B), "-7", "-7",
+            "+8", "-8%1".arg(_B), "-8", "+9%1".arg(_B), "+9", "-9", "+10%1".arg(_B), "+10", "-10%1".arg(_B), "-10"
         ];
 
 
-        // Brendan Power's tuning, half valved
-        var powerBender = [
-            "+1", "-1b", "-1", "+2b", "+2", "-2bb", "-2b", "-2", "-3bbb", "-3bb", "-3b",  "-3",
-            "+4", "-4b", "-4", "-5b", "-5", "+6",   "-6b", "-6", "+7b",   "+7",   "-7b",  "-7",
-            "+8", "-8b", "-8", "+9b", "+9", "-9bb", "-9b", "-9", "+10b",  "+10",  "-10bb", "-10b", "-10"
+        // _Brendan Power's tuning, half valved
+        var power_Bender = [
+            "+1", "-1%1".arg(_B), "-1", "+2%1".arg(_B), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "-3%1%2%3".arg(_B).arg(_B).arg(_B), "-3%1%2".arg(_B).arg(_B), "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "-5%1".arg(_B), "-5", "+6", "-6%1".arg(_B), "-6", "+7%1".arg(_B), "+7", "-7%1".arg(_B), "-7",
+            "+8", "-8%1".arg(_B), "-8", "+9%1".arg(_B), "+9", "-9%1%2".arg(_B).arg(_B), "-9%1".arg(_B), "-9", "+10%1".arg(_B), "+10", "-10%1%2".arg(_B).arg(_B), "-10%1".arg(_B), "-10"
         ];
-        powerBender[-2] = "+1bb"; powerBender[-1] = "+1b"; //Two notes below the key at blow 1
+        power_Bender[-2] = "+1%1%2".arg(_B).arg(_B); power_Bender[-1] = "+1%1".arg(_B); //Two notes below the key at blow 1
 
 
         // Brendan Power's tuning, half valved
         var powerDraw = [
-            "+1", "-1b", "-1", "+2b", "+2", "-2bb", "-2b", "-2", "-3bbb", "-3bb", "-3b",   "-3",
-            "+4", "-4b", "-4", "+5b", "+5", "-5",   "+6b", "+6", "-6b",   "-6",   "-7b",   "-7",
-            "+8", "-8b", "-8", "+9b", "+9", "-9bb", "-9b", "-9", "+10b",  "+10",  "-10bb", "-10b", "-10"
+            "+1", "-1%1".arg(_B), "-1", "+2%1".arg(_B), "+2", "-2%1%2".arg(_B).arg(_B), "-2%1".arg(_B), "-2", "-3%1%2%3".arg(_B).arg(_B).arg(_B), "-3%1%2".arg(_B).arg(_B), "-3%1".arg(_B), "-3",
+            "+4", "-4%1".arg(_B), "-4", "+5%1".arg(_B), "+5", "-5", "+6%1".arg(_B), "+6", "-6%1".arg(_B), "-6", "-7%1".arg(_B), "-7",
+            "+8", "-8%1".arg(_B), "-8", "+9%1".arg(_B), "+9", "-9%1%2".arg(_B).arg(_B), "-9%1".arg(_B), "-9", "+10%1".arg(_B), "+10", "-10%1%2".arg(_B).arg(_B), "-10%1".arg(_B), "-10"
         ];
-        powerDraw[-2] = "+1bb"; powerDraw[-1] = "+1b"; //Two notes below the key at blow 1
+        powerDraw[-2] = "+1%1%2".arg(_B).arg(_B); powerDraw[-1] = "+1%1".arg(_B); //Two notes below the key at blow 1
 
 
         var tuning = richter
@@ -374,8 +379,8 @@ MuseScore {
                     tab = ""
                 }
 
-                if (bendChar !== "b")
-                    tab = tab.replace(/b/g, bendChar)
+                if (_B !== "b")
+                    tab = tab.replace(/b/g, _B)
 
                 tab = applyStyleToTabNotes(tab)
                 text.text = tab + text.text
