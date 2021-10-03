@@ -16,7 +16,13 @@
 import QtQuick 2.9
 import QtQuick.Controls 1.5
 import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.2 // FileDialogs
+import QtQuick.Window 2.3
+import Qt.labs.folderlistmodel 2.2
+import Qt.labs.settings 1.0
+import QtQml 2.8
 import MuseScore 3.0
+import FileIO 3.0
 
 
 MuseScore {
@@ -26,11 +32,14 @@ MuseScore {
     pluginType : "dialog"
 
     // ------ OPTIONS -------
-    property string sep : "\n"      // change to "," or " " if you want tabs horizontally
+    property string sep  : "\n"      // change to "," or " " if you want tabs horizontally
+    property string _Bl  : "+"
+    property string _D   : "-"
     property string _B   : "'"      // change to "b" if you want bend to be noted with b
     property string _O   : "o"      // overbend char
     property string _S   : "&lt;"  // button slide char <
     property string _L   : "°"      // 16 hole chromatic lowest register char
+    property bool bold   : false
 
     property string _RED  : "#ff0000"
 
@@ -88,7 +97,7 @@ MuseScore {
 
                 width : 100
                 onCurrentIndexChanged : {
-                    console.debug(keylist.get(currentIndex).text + ", " + keylist.get(currentIndex).harpkey)
+                    _DEBUG && console.debug(keylist.get(currentIndex).text + ", " + keylist.get(currentIndex).harpkey)
                     keylist.key = keylist.get(currentIndex).harpkey
                 }
             }
@@ -121,7 +130,7 @@ MuseScore {
 
                 width : 100
                 onCurrentIndexChanged : {
-                    console.debug(harp.get(currentIndex).text + ", " + harp.get(currentIndex).tuning)
+                    _DEBUG && console.debug(harp.get(currentIndex).text + ", " + harp.get(currentIndex).tuning)
                     harp.tuning = harp.get(currentIndex).tuning
                 }
             }
@@ -143,7 +152,7 @@ MuseScore {
 
                 width : 100
                 onCurrentIndexChanged : {
-                    console.debug(placetext.get(currentIndex).text + ", " + placetext.get(currentIndex).position)
+                    _DEBUG && console.debug(placetext.get(currentIndex).text + ", " + placetext.get(currentIndex).position)
                     placetext.position = placetext.get(currentIndex).position
                 }
             }
@@ -171,7 +180,7 @@ MuseScore {
 
                     width : 100
                     onCurrentIndexChanged : {
-                        console.debug(breathtext.get(currentIndex).text + ", " + breathtext.get(currentIndex).position)
+                        _DEBUG && console.debug(breathtext.get(currentIndex).text + ", " + breathtext.get(currentIndex).position)
                         breathtext.position = breathtext.get(currentIndex).position
                     }
                 }
@@ -194,7 +203,7 @@ MuseScore {
 
                     width : 100
                     onCurrentIndexChanged : {
-                        console.debug(breathIndicator.get(currentIndex).text + ", " + breathIndicator.get(currentIndex).mode)
+                        _DEBUG && console.debug(breathIndicator.get(currentIndex).text + ", " + breathIndicator.get(currentIndex).mode)
                         breathIndicator.mode = breathIndicator.get(currentIndex).mode
                     }
                 }
@@ -353,7 +362,7 @@ MuseScore {
         }
 
         var harpkey = keylist.key
-        console.log("harpkey set to  " + keylist.key)
+        _DEBUG && console.debug("harpkey set to  " + keylist.key)
 
         // For 16 Holes Standard C Chromatic
         var C3 = 48
@@ -374,7 +383,7 @@ MuseScore {
             return
             var tab = tuning[notes[i].pitch - harpkey]
             if (typeof tab === "undefined") {
-                text.text = "X"
+                text.text = "<b>X<\b>"
                 text.color = _RED
 
             } else {
@@ -468,7 +477,7 @@ MuseScore {
             endStaff = cursor.staffIdx
         }
 
-        console.log(startStaff + " - " + endStaff + " - " + endTick)
+        _DEBUG && console.debug(startStaff + " - " + endStaff + " - " + endTick)
 
         for (var staff = startStaff; staff <= endStaff; staff++) {
             for (var voice = 0; voice < 4; voice++) {
