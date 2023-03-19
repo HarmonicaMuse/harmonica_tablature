@@ -219,7 +219,7 @@ MuseScore {
                 text : "Ok"
                 onClicked : {
                     apply()
-                    Qt.quit()
+                    quit()
                 }
             }
 
@@ -227,7 +227,7 @@ MuseScore {
                 id : closeButton
                 text : "Close"
                 onClicked : {
-                    Qt.quit()
+                    quit()
                 }
             }
         }
@@ -447,7 +447,7 @@ MuseScore {
 
     function applyToSelection(func) {
         if (typeof curScore === 'undefined') {
-            Qt.quit()
+            quit()
         }
 
         var cursor = curScore.newCursor()
@@ -512,7 +512,7 @@ MuseScore {
                 } // ond if fullScore
             } // end for voice
         } // end for staff
-        Qt.quit()
+        quit()
     } // end applyToSelection()
 
     function apply() {
@@ -523,6 +523,6 @@ MuseScore {
 
     onRun : {
         if (typeof curScore === 'undefined')
-            Qt.quit()
+            quit()
     }
 }
